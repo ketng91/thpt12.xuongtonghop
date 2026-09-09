@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm từ vựng - Lớp Anh thầy Kết</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #588b2c; --light-green: #e8f5e9; --farm-yellow: #ffca28;
+            --farm-orange: #f57c00; --wood-brown: #795548; --bg-color: #f1f8e9; --white: #ffffff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); background-image: radial-gradient(#c8e6c9 15%, transparent 16%); background-size: 30px 30px; color: #333; padding-bottom: 50px; }
+        
+        /* HEADER */
+        header { background: linear-gradient(135deg, #a1887f, var(--wood-brown)); color: var(--farm-yellow); text-align: center; padding: 25px 15px; border-bottom: 8px solid #4e342e; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: relative; }
+        .home-btn { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); background: var(--farm-yellow); color: #4e342e; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 4px 8px rgba(0,0,0,0.2); border: 2px solid #fff; transition: all 0.3s ease; z-index: 10; }
+        .home-btn:hover { background: var(--farm-orange); color: #fff; transform: translateY(-50%) scale(1.1); }
+        .home-btn svg { width: 24px; height: 24px; fill: currentColor; }
+        header h1 { font-family: 'Comfortaa', cursive; font-size: 1.8rem; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); padding: 0 40px; }
+        header p { color: #fff; margin-top: 5px; font-size: 0.95rem; font-weight: 600; }
+
+        /* CONTAINER & CARD */
+        .container { max-width: 800px; margin: 20px auto; padding: 0 12px; }
+        .exam-card { background: var(--white); border-radius: 16px; margin-bottom: 20px; border: 3px solid #a5d6a7; box-shadow: 0 6px 12px rgba(88, 139, 44, 0.12); overflow: hidden; }
+        .exam-header { background: linear-gradient(to right, #81c784, #66bb6a); color: white; padding: 16px 20px; font-size: 1.2rem; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; border-bottom: 2px solid #4caf50; }
+        .exam-header:hover { background: linear-gradient(to right, #66bb6a, #4caf50); }
+        .exam-header .icon { font-size: 1.2rem; transition: transform 0.3s ease; background: rgba(255,255,255,0.2); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .exam-card.active .exam-header .icon { transform: rotate(180deg); }
+        
+        /* CONTENT EXAM */
+        .exam-content { display: none; padding: 20px 15px; background-color: #fafafa; }
+        .exam-card.active .exam-content { display: block; }
+        .question-box { background: var(--white); padding: 16px; border-radius: 12px; margin-bottom: 18px; border: 2px solid #e0e0e0; }
+        .question-text { font-size: 1.05rem; font-weight: 700; color: #2e7d32; margin-bottom: 12px; line-height: 1.5; }
+        .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.3rem; padding: 0 35px; }
+            .home-btn { width: 38px; height: 38px; left: 10px; }
+            .home-btn svg { width: 20px; height: 20px; }
+        }
+        .option-item { background: #f1f8e9; border: 2px solid #c8e6c9; padding: 10px 14px; border-radius: 10px; cursor: pointer; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; }
+        .option-item:hover { background: #dbedc8; }
+        .option-item input[type="radio"] { margin-right: 10px; accent-color: var(--primary-green); transform: scale(1.2); }
+        
+        /* EXPLANATION & SUBMIT */
+        .explanation-box { display: none; margin-top: 12px; padding: 12px; background-color: #fffde7; border-left: 5px solid var(--farm-yellow); border-radius: 6px; font-size: 0.9rem; line-height: 1.5; }
+        .explanation-box strong { color: var(--farm-orange); }
+        .translation-list { margin-top: 6px; padding-left: 18px; font-style: italic; color: #555; }
+        .question-box.correct { border-color: #4caf50; background-color: #f1f8e9; }
+        .question-box.incorrect { border-color: #f44336; background-color: #ffebee; }
+        .option-item.correct-option { background-color: #c8e6c9 !important; border-color: #4caf50 !important; font-weight: bold; color: #1b5e20; }
+        .option-item.wrong-option { background-color: #ffcdd2 !important; border-color: #e53935 !important; color: #b71c1c; }
+        .btn-submit { display: block; width: 100%; background: linear-gradient(135deg, var(--farm-orange), #ff9800); color: white; border: none; padding: 14px; font-size: 1.1rem; font-weight: 800; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(245, 124, 0, 0.3); margin-top: 15px; }
+        .score-board { display: none; text-align: center; background: #fff8e1; border: 2px dashed #ffa000; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 1.2rem; font-weight: 800; color: #e65100; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <!-- NÚT HOME (Thay # bằng URL trang chủ) -->
+        <a href="#" class="home-btn" title="Trở về Trang chủ">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </a>
+        <h1>🌾 TRẮC NGHIỆM TỪ VỰNG 🚜</h1>
+        <p>Lớp Anh thầy Kết - Nông trại tri thức</p>
+    </header>
+
+    <div class="container" id="exams-container"></div>
+
+    <script>
+        // =========================================================================
+        // DỮ LIỆU ĐỀ THI VỚI ĐẦY ĐỦ ĐÁP ÁN, DỊCH CÁC PHƯƠNG ÁN & DỊCH CÂU
+        // Cấu trúc 1 câu:
+        // q: "Đề bài"
+        // options: ["A", "B", "C", "D"]
+        // ans: "ĐÁP_ÁN"
+        // trans: ["A. ...", "B. ...", "C. ...", "D. ..."]
+        // mean: "Dịch nghĩa toàn câu"
+        // =========================================================================
+
+        const dataExams = [
+            {
+                id: "de1",
+                title: "🌻 ĐỀ 01: Unit 1 - LIFE STORIES WE ADMIRE",
+                questions: [
+    {
+        q: "Question 1: Uncle Ho dedicated his whole life to the ______ of national liberation.",
+        options: ["standard", "course", "cause", "case"],
+        ans: "C",
+        trans: ["A. standard: tiêu chuẩn", "B. course: khóa học / tiến trình", "C. cause: sự nghiệp / chính nghĩa", "D. case: trường hợp"],
+        mean: "Bác Hồ đã cống hiến cả cuộc đời mình cho sự nghiệp giải phóng dân tộc."
+    },
+    {
+        q: "Question 2: Steve Jobs was a true ______ who revolutionized the personal computer and mobile phone industries.",
+        options: ["vision", "visible", "visually", "visionary"],
+        ans: "D",
+        trans: ["A. vision: tầm nhìn (danh từ)", "B. visible: có thể nhìn thấy (tính từ)", "C. visually: về mặt thị giác (trạng từ)", "D. visionary: người có tầm nhìn xa trông rộng (danh từ chỉ người)"],
+        mean: "Steve Jobs là một nhà kiến tạo / người có tầm nhìn xa trông rộng thực sự, người đã cách mạng hóa ngành công nghiệp máy tính cá nhân và điện thoại di động."
+    },
+    {
+        q: "Question 3: General Vo Nguyen Giap was a ______ military leader who defeated powerful foreign aggressors.",
+        options: ["distinguishably", "distinguished", "distinction", "distinguish"],
+        ans: "B",
+        trans: ["A. distinguishably: một cách phân biệt (trạng từ)", "B. distinguished: kiệt xuất / lỗi lạc / ưu tú (tính từ)", "C. distinction: sự khác biệt / nét độc đáo (danh từ)", "D. distinguish: phân biệt (động từ)"],
+        mean: "Đại tướng Võ Nguyên Giáp là một nhà quân sự kiệt xuất, người đã đánh bại những kẻ thù xâm lược hùng mạnh."
+    },
+    {
+        q: "Question 4: After dropping ______ of college, Steve Jobs co-founded Apple in his family garage.",
+        options: ["out", "in", "away", "on"],
+        ans: "A",
+        trans: ["A. drop out of: bỏ học giữa chừng", "B. drop in: ghé thăm", "C. drop away: giảm dần / biến mất", "D. drop on: mắng mỏ / tình cờ gặp"],
+        mean: "Sau khi bỏ học đại học, Steve Jobs đã đồng sáng lập Apple trong gara gia đình mình."
+    },
+    {
+        q: "Question 5: The biography gives a detailed ______ of the general's life and military achievements.",
+        options: ["accountant", "accounting", "account", "accountable"],
+        ans: "C",
+        trans: ["A. accountant: kế toán viên", "B. accounting: ngành kế toán", "C. account: bản tường thuật / sự miêu tả", "D. accountable: chịu trách nhiệm"],
+        mean: "Cuốn tiểu sử đưa ra một sự miêu tả / bản tường thuật chi tiết về cuộc đời và những thành tựu quân sự của vị tướng."
+    },
+    {
+        q: "Question 6: President Ho Chi Minh was famous for his ______ lifestyle, living in a simple stilt house.",
+        options: ["arrogant", "humble", "greedy", "boastful"],
+        ans: "B",
+        trans: ["A. arrogant: kiêu ngạo", "B. humble: giản dị / khiêm tốn", "C. greedy: tham lam", "D. boastful: khoe khoang"],
+        mean: "Chủ tịch Hồ Chí Minh nổi tiếng với lối sống giản dị, sống trong một ngôi nhà sàn đơn sơ."
+    },
+    {
+        q: "Question 7: Thomas Edison showed great ______ by continuing his experiments despite failing thousands of times.",
+        options: ["persevered", "persevering", "persevere", "perseverance"],
+        ans: "D",
+        trans: ["A. persevered: đã kiên trì (động từ quá khứ)", "B. persevering: kiên trì (tính từ)", "C. persevere: kiên trì (động từ)", "D. perseverance: sự kiên trì / sự bền bỉ (danh từ)"],
+        mean: "Thomas Edison đã thể hiện sự kiên trì lớn lao bằng cách tiếp tục các thí nghiệm của mình dù đã thất bại hàng nghìn lần."
+    },
+    {
+        q: "Question 8: Her remarkable achievements in medicine served as an ______ to young doctors all over the world.",
+        options: ["inspiration", "inspire", "inspirational", "inspired"],
+        ans: "A",
+        trans: ["A. inspiration: nguồn cảm hứng (danh từ)", "B. inspire: truyền cảm hứng (động từ)", "C. inspirational: đầy cảm hứng (tính từ)", "D. inspired: cảm hứng / có nguồn cảm hứng (tính từ)"],
+        mean: "Những thành tựu đáng chú ý của bà trong y học đã đóng vai trò là nguồn cảm hứng cho các bác sĩ trẻ trên toàn thế giới."
+    },
+    {
+        q: "Question 9: Steve Jobs was given up for adoption at birth by his ______ parents.",
+        options: ["adoptive", "biological", "adoption", "adopted"],
+        ans: "B",
+        trans: ["A. adoptive parents: bố mẹ nuôi", "B. biological parents: bố mẹ ruột / bố mẹ đẻ", "C. adoption: sự nhận nuôi", "D. adopted: được nhận nuôi"],
+        mean: "Steve Jobs đã được bố mẹ ruột cho làm con nuôi ngay từ khi mới sinh ra."
+    },
+    {
+        q: "Question 10: The doctor made a significant ______ to the treatment of cancer through his groundbreaking research.",
+        options: ["contribute", "contributor", "contribution", "contributory"],
+        ans: "C",
+        trans: ["A. contribute: đóng góp (động từ)", "B. contributor: người đóng góp (danh từ)", "C. contribution: sự đóng góp (danh từ)", "D. contributory: mang tính đóng góp (tính từ)"],
+        mean: "Bác sĩ đã có sự đóng góp quan trọng cho việc điều trị ung thư thông qua nghiên cứu mang tính đột phá của mình."
+    },
+    {
+        q: "Question 11: Nguyen Du was a genius poet whose famous work, The Tale of Kieu, remains a masterpiece of Vietnamese ______.",
+        options: ["literary", "literature", "literate", "literacy"],
+        ans: "B",
+        trans: ["A. literary: thuộc về văn học (tính từ)", "B. literature: văn học (danh từ)", "C. literate: biết đọc biết viết (tính từ)", "D. literacy: sự biết đọc biết viết (danh từ)"],
+        mean: "Nguyễn Du là một đại tài thi sĩ, tác phẩm nổi tiếng Truyện Kiều của ông vẫn là một kiệt tác của văn học Việt Nam."
+    },
+    {
+        q: "Question 12: She was born into a poor family, but her determination helped her ______ many obstacles in life.",
+        options: ["overtake", "overcome", "overlook", "overturn"],
+        ans: "B",
+        trans: ["A. overtake: vượt qua (xe cộ, tốc độ)", "B. overcome: vượt qua / khắc phục (khó khăn, trở ngại)", "C. overlook: bỏ qua / ngó lơ", "D. overturn: lật úp / đảo ngược"],
+        mean: "Bà sinh ra trong một gia đình nghèo, nhưng sự quyết tâm đã giúp bà vượt qua nhiều trở ngại trong cuộc sống."
+    },
+    {
+        q: "Question 13: The book tells the inspiring story of a famous scientist who overcame severe physical ______.",
+        options: ["benefits", "advantages", "disabilities", "abilities"],
+        ans: "C",
+        trans: ["A. benefits: lợi ích", "B. advantages: thuận lợi", "C. disabilities: sự khuyết tật / tàn tật", "D. abilities: khả năng"],
+        mean: "Cuốn sách kể về câu chuyện đầy cảm hứng của một nhà khoa học nổi tiếng, người đã vượt qua những khuyết tật nặng nề về thể chất."
+    },
+    {
+        q: "Question 14: Many young people admire Bill Gates not only for his wealth, but also for his ______.",
+        options: ["generous", "generosity", "generously", "generousness"],
+        ans: "B",
+        trans: ["A. generous: hào phóng (tính từ)", "B. generosity: sự hào phóng / lòng rộng lượng (danh từ)", "C. generously: một cách hào phóng (trạng từ)", "D. generousness: sự hào phóng (ít phổ biến hơn generosity)"],
+        mean: "Nhiều người trẻ ngưỡng mộ Bill Gates không chỉ vì sự giàu có mà còn vì lòng hào phóng của ông."
+    },
+    {
+        q: "Question 15: He decided to ______ from his position as CEO to spend more time on charitable work.",
+        options: ["resign", "retain", "resist", "result"],
+        ans: "A",
+        trans: ["A. resign (from): từ chức", "B. retain: giữ lại", "C. resist: chống lại", "D. result (from): dẫn đến / là kết quả của"],
+        mean: "Ông quyết định từ chức vị trí CEO để dành nhiều thời gian hơn cho công việc từ thiện."
+    },
+    {
+        q: "Question 16: Uncle Ho was deeply ______ to the struggle for Vietnam's independence and freedom.",
+        options: ["committal", "commit", "committed", "committing"],
+        ans: "C",
+        trans: ["A. committal: sự cam kết / sự chuyển giao (danh từ)", "B. commit: cam kết / thực hiện (động từ)", "C. committed (to): tận tụy / cống hiến hết mình (tính từ)", "D. committing: đang thực hiện (hiện tại phân từ)"],
+        mean: "Bác Hồ hết lòng tận tụy với cuộc đấu tranh giành độc lập, tự do cho Việt Nam."
+    },
+    {
+        q: "Question 17: Steve Jobs and his friends founded Apple with the goal of making computers ______ to everyone.",
+        options: ["access", "accessible", "accessibility", "accessibly"],
+        ans: "B",
+        trans: ["A. access: truy cập (động từ/danh từ)", "B. accessible (to): có thể tiếp cận được (tính từ)", "C. accessibility: khả năng tiếp cận (danh từ)", "D. accessibly: một cách dễ tiếp cận (trạng từ)"],
+        mean: "Steve Jobs và các bạn của ông sáng lập Apple với mục tiêu làm cho máy tính trở nên dễ tiếp cận với tất cả mọi người."
+    },
+    {
+        q: "Question 18: General Vo Nguyen Giap played a key role in the historic victory at Dien Bien Phu, which ______ French colonial rule.",
+        options: ["created", "started", "extended", "ended"],
+        ans: "D",
+        trans: ["A. created: đã tạo ra", "B. started: đã bắt đầu", "C. extended: đã mở rộng", "D. ended: đã chấm dứt / kết thúc"],
+        mean: "Đại tướng Võ Nguyên Giáp đóng vai trò then chốt trong chiến thắng Điện Biên Phủ lịch sử, chiến thắng đã chấm dứt ách đô hộ của thực dân Pháp."
+    },
+    {
+        q: "Question 19: An autobiography is a book that someone writes about their ______ life.",
+        options: ["self", "proper", "own", "owner"],
+        ans: "C",
+        trans: ["A. self: bản thân", "B. proper: thích đáng / riêng", "C. one's own life: cuộc đời của chính mình", "D. owner: chủ sở hữu"],
+        mean: "Tự truyện là cuốn sách mà một người viết về cuộc đời của chính bản thân họ."
+    },
+    {
+        q: "Question 20: After years of hard work, she finally achieved her dream of becoming a world-renowned ______.",
+        options: ["science", "scientist", "scientific", "scientifically"],
+        ans: "B",
+        trans: ["A. science: khoa học (danh từ)", "B. scientist: nhà khoa học (danh từ chỉ người)", "C. scientific: thuộc khoa học (tính từ)", "D. scientifically: theo cách khoa học (trạng từ)"],
+        mean: "Sau nhiều năm làm việc chăm chỉ, cuối cùng cô ấy đã đạt được ước mơ trở thành một nhà khoa học nổi tiếng thế giới."
+    },
+    {
+        q: "Question 21: The young athlete showed great ______ and courage during the final match.",
+        options: ["determination", "determine", "determined", "determinately"],
+        ans: "A",
+        trans: ["A. determination: sự quyết tâm (danh từ)", "B. determine: quyết định (động từ)", "C. determined: quyết tâm (tính từ)", "D. determinately: một cách dứt khoát (trạng từ)"],
+        mean: "Vận động viên trẻ đã thể hiện sự quyết tâm và dũng cảm lớn trong trận thi đấu chung kết."
+    },
+    {
+        q: "Question 22: Steve Jobs was considered an ______ whose inventions changed the way people communicate and work.",
+        options: ["innovate", "innovation", "innovator", "innovative"],
+        ans: "C",
+        trans: ["A. innovate: đổi mới (động từ)", "B. innovation: sự đổi mới (danh từ)", "C. innovator: nhà đổi mới / nhà phát minh (danh từ chỉ người)", "D. innovative: mang tính đổi mới (tính từ)"],
+        mean: "Steve Jobs được coi là một nhà đổi mới sáng tạo, người mà các phát minh đã làm thay đổi cách con người giao tiếp và làm việc."
+    },
+    {
+        q: "Question 23: The museum displays many artifacts related to the life and ______ of historical figures.",
+        options: ["achievements", "achieving", "achievable", "achieve"],
+        ans: "A",
+        trans: ["A. achievements: thành tựu (danh từ số nhiều)", "B. achieving: việc đạt được (danh động từ)", "C. achievable: có thể đạt được (tính từ)", "D. achieve: đạt được (động từ)"],
+        mean: "Bảo tàng trưng bày nhiều hiện vật liên quan đến cuộc đời và những thành tựu của các nhân vật lịch sử."
+    },
+    {
+        q: "Question 24: He was awarded a medal in recognition of his ______ service to the nation.",
+        options: ["distinguishedly", "distinguished", "distinguish", "distinguishing"],
+        ans: "B",
+        trans: ["A. distinguishedly: một cách xuất sắc (trạng từ)", "B. distinguished: xuất sắc / ưu tú (tính từ)", "C. distinguish: phân biệt (động từ)", "D. distinguishing: phân biệt / khác biệt (tính từ)"],
+        mean: "Ông đã được trao tặng huy chương để ghi nhận sự phục vụ xuất sắc của mình cho đất nước."
+    },
+    {
+        q: "Question 25: Steve Jobs was raised by Clara and Paul Jobs, who became his ______ parents.",
+        options: ["biological", "adoption", "adoptively", "adoptive"],
+        ans: "D",
+        trans: ["A. biological: thuộc về sinh học / ruột thịt", "B. adoption: sự nhận nuôi", "C. adoptively: một cách nhận nuôi", "D. adoptive parents: bố mẹ nuôi"],
+        mean: "Steve Jobs được nuôi dưỡng bởi Clara và Paul Jobs, những người đã trở thành bố mẹ nuôi của ông."
+    },
+    {
+        q: "Question 26: Her life story is a powerful reminder that perseverance and hard work can lead to ______.",
+        options: ["succeed", "successful", "success", "successfully"],
+        ans: "C",
+        trans: ["A. succeed: thành công (động từ)", "B. successful: thành công (tính từ)", "C. success: sự thành công (danh từ)", "D. successfully: một cách thành công (trạng từ)"],
+        mean: "Câu chuyện cuộc đời của cô ấy là một lời nhắc nhở mạnh mẽ rằng sự kiên trì và chăm chỉ có thể dẫn đến thành công."
+    },
+    {
+        q: "Question 27: General Vo Nguyen Giap was admired by millions of people for his brilliant military ______.",
+        options: ["strategic", "strategies", "strategically", "strategist"],
+        ans: "B",
+        trans: ["A. strategic: thuộc về chiến lược (tính từ)", "B. strategies: các chiến lược (danh từ số nhiều)", "C. strategically: một cách chiến lược (trạng từ)", "D. strategist: nhà chiến lược (danh từ chỉ người)"],
+        mean: "Đại tướng Võ Nguyên Giáp được hàng triệu người ngưỡng mộ vì những chiến lược quân sự thiên tài của mình."
+    },
+    {
+        q: "Question 28: The charity organization was established to help children from ______ backgrounds.",
+        options: ["advantage", "advantageous", "disadvantaged", "advantageously"],
+        ans: "C",
+        trans: ["A. advantage: lợi thế (danh từ)", "B. advantageous: có lợi (tính từ)", "C. disadvantaged: hoàn cảnh khó khăn / chịu nhiều thiệt thòi (tính từ)", "D. advantageously: một cách có lợi (trạng từ)"],
+        mean: "Tổ chức từ thiện được thành lập nhằm giúp đỡ trẻ em có hoàn cảnh khó khăn."
+    },
+    {
+        q: "Question 29: She devoted her entire career ______ fighting for the rights of women and children.",
+        options: ["for", "to", "with", "on"],
+        ans: "B",
+        trans: ["A. for: cho / vì", "B. devote something to V-ing: cống hiến cái gì cho việc gì", "C. with: với", "D. on: trên"],
+        mean: "Bà đã cống hiến toàn bộ sự nghiệp của mình cho việc đấu tranh vì quyền lợi của phụ nữ và trẻ em."
+    },
+    {
+        q: "Question 30: Newton is widely regarded as one of the most influential ______ in the history of science.",
+        options: ["shapes", "numbers", "figures", "forms"],
+        ans: "C",
+        trans: ["A. shapes: hình dạng", "B. numbers: con số", "C. figures: nhân vật / vĩ nhân", "D. forms: hình thức"],
+        mean: "Newton được công nhận rộng rãi là một trong những nhân vật có ảnh hưởng nhất trong lịch sử khoa học."
+    }
+
+                ]
+            },
+            {
+                id: "de2",
+                title: "🐣 ĐỀ 02: Unit 1 - LIFE STORIES WE ADMIRE",
+                questions: [
+    {
+        q: "Question 1: Uncle Ho was a great leader who devoted his entire life to the ______ of national independence.",
+        options: ["pursuit", "pursue", "pursuer", "pursuable"],
+        ans: "A",
+        trans: ["A. pursuit: sự theo đuổi (danh từ)", "B. pursue: theo đuổi (động từ)", "C. pursuer: người theo đuổi (danh từ chỉ người)", "D. pursuable: có thể theo đuổi (tính từ)"],
+        mean: "Bác Hồ là một lãnh tụ vĩ đại, người đã dành trọn cuộc đời mình cho sự nghiệp theo đuổi độc lập dân tộc."
+    },
+    {
+        q: "Question 2: Despite facing numerous difficulties, her ______ faith in success helped her achieve her goals.",
+        options: ["shake", "shaken", "shaking", "unshakable"],
+        ans: "D",
+        trans: ["A. shake: rung lắc / lung lay (động từ)", "B. shaken: bị lung lay (quá khứ phân từ)", "C. shaking: đang rung lắc (hiện tại phân từ)", "D. unshakable: không thể lay chuyển / vững chắc (tính từ)"],
+        mean: "Mặc dù đối mặt với nhiều khó khăn, niềm tin không thể lay chuyển vào thành công đã giúp cô đạt được các mục tiêu của mình."
+    },
+    {
+        q: "Question 3: General Vo Nguyen Giap was a legendary military ______ whose tactics are still studied worldwide.",
+        options: ["strategy", "strategic", "strategist", "strategically"],
+        ans: "C",
+        trans: ["A. strategy: chiến lược (danh từ)", "B. strategic: thuộc về chiến lược (tính từ)", "C. strategist: nhà chiến lược (danh từ chỉ người)", "D. strategically: một cách chiến lược (trạng từ)"],
+        mean: "Đại tướng Võ Nguyên Giáp là một nhà chiến lược quân sự huyền thoại, người mà các chiến thuật vẫn đang được nghiên cứu trên toàn thế giới."
+    },
+    {
+        q: "Question 4: After graduating, he decided to ______ on a mission to bring education to remote areas.",
+        options: ["board", "embark", "depart", "escape"],
+        ans: "B",
+        trans: ["A. board: lên (tàu, xe)", "B. embark on: bắt đầu / dấn thân vào (một sứ mệnh, hành trình)", "C. depart: khởi hành", "D. escape: trốn thoát"],
+        mean: "Sau khi tốt nghiệp, anh quyết định dấn thân vào sứ mệnh mang giáo dục đến các vùng sâu vùng xa."
+    },
+    {
+        q: "Question 5: His groundbreaking invention made a huge ______ on the modern technology industry.",
+        options: ["affection", "attack", "contact", "impact"],
+        ans: "D",
+        trans: ["A. affection: sự yêu mến", "B. attack: cuộc tấn công", "C. contact: sự liên lạc", "D. impact: tác động / ảnh hưởng"],
+        mean: "Phát minh mang tính đột phá của ông đã tạo ra tác động to lớn đối với ngành công nghiệp công nghệ hiện đại."
+    },
+    {
+        q: "Question 6: Many historical figures became famous for their ______ acts of bravery during the war.",
+        options: ["heroic", "hero", "heroism", "heroically"],
+        ans: "A",
+        trans: ["A. heroic: anh hùng / anh dũng (tính từ)", "B. hero: anh hùng (danh từ)", "C. heroism: chủ nghĩa anh hùng (danh từ)", "D. heroically: một cách anh dũng (trạng từ)"],
+        mean: "Nhiều nhân vật lịch sử trở nên nổi tiếng nhờ những hành động dũng cảm mang tính anh hùng trong chiến tranh."
+    },
+    {
+        q: "Question 7: Steve Jobs was known for his ______ leadership style, which pushed employees to achieve excellence.",
+        options: ["demand", "demandingly", "demanding", "demanded"],
+        ans: "C",
+        trans: ["A. demand: yêu cầu (động từ/danh từ)", "B. demandingly: một cách khắt khe (trạng từ)", "C. demanding: đòi hỏi cao / khắt khe (tính từ)", "D. demanded: được yêu cầu (động từ quá khứ)"],
+        mean: "Steve Jobs nổi tiếng với phong cách lãnh đạo đòi hỏi cao, điều này đã thúc đẩy nhân viên đạt tới sự xuất sắc."
+    },
+    {
+        q: "Question 8: The biography provides a valuable ______ into the personal life of the famous scientist.",
+        options: ["sight", "hindsight", "foresight", "insight"],
+        ans: "D",
+        trans: ["A. sight: tầm nhìn / cảnh vật", "B. hindsight: sự nhận thức sau khi sự việc xảy ra", "C. foresight: sự nhìn xa trông rộng", "D. insight (into): cái nhìn sâu sắc / sự thấu hiểu"],
+        mean: "Cuốn tiểu sử mang lại cái nhìn sâu sắc giá trị về cuộc sống đời tư của nhà khoa học nổi tiếng."
+    },
+    {
+        q: "Question 9: Thomas Edison is credited with many inventions that ______ the way people live today.",
+        options: ["translated", "transformed", "transported", "transferred"],
+        ans: "B",
+        trans: ["A. translated: đã dịch thuật", "B. transformed: đã biến đổi / làm thay đổi hoàn toàn", "C. transported: đã vận chuyển", "D. transferred: đã chuyển giao"],
+        mean: "Thomas Edison được ghi nhận với nhiều phát minh đã làm thay đổi hoàn toàn cách con người sống ngày nay."
+    },
+    {
+        q: "Question 10: She is a highly ______ doctor who has saved hundreds of lives throughout her career.",
+        options: ["respect", "respectable", "respectful", "respective"],
+        ans: "B",
+        trans: ["A. respect: sự tôn trọng (danh từ/động từ)", "B. respectable: đáng kính / đáng tôn trọng (tính từ)", "C. respectful: thể hiện sự tôn trọng (tính từ)", "D. respective: tương ứng (tính từ)"],
+        mean: "Bà là một bác sĩ rất đáng kính, người đã cứu sống hàng trăm mạng người trong suốt sự nghiệp của mình."
+    },
+    {
+        q: "Question 11: Bill Gates dropped out of Harvard to ______ his dream of starting a software company.",
+        options: ["take", "hold", "lead", "pursue"],
+        ans: "D",
+        trans: ["A. take: cầm / lấy", "B. hold: cầm / giữ", "C. lead: dẫn dắt", "D. pursue one's dream: theo đuổi ước mơ"],
+        mean: "Bill Gates đã bỏ học Harvard để theo đuổi ước mơ thành lập một công ty phần mềm."
+    },
+    {
+        q: "Question 12: His remarkable life story served as a source of ______ for millions of young people.",
+        options: ["encourage", "encouragement", "encouraging", "encouragingly"],
+        ans: "B",
+        trans: ["A. encourage: khuyến khích (động từ)", "B. encouragement: sự nguồn động viên / sự khuyến khích (danh từ)", "C. encouraging: mang tính động viên (tính từ)", "D. encouragingly: một cách động viên (trạng từ)"],
+        mean: "Câu chuyện cuộc đời đáng kinh ngạc của ông đã đóng vai trò là nguồn động viên cho hàng triệu người trẻ."
+    },
+    {
+        q: "Question 13: Uncle Ho passed ______ in 1969, leaving behind a profound legacy for the nation.",
+        options: ["out", "off", "away", "by"],
+        ans: "C",
+        trans: ["A. pass out: ngất xỉu", "B. pass off: diễn ra / qua đi", "C. pass away: qua đời / qua đời", "D. pass by: đi qua"],
+        mean: "Bác Hồ qua đời vào năm 1969, để lại một di sản sâu sắc cho dân tộc."
+    },
+    {
+        q: "Question 14: The foundation was set up to honor his ______ achievements in the field of education.",
+        options: ["standing", "mediocre", "standard", "outstanding"],
+        ans: "D",
+        trans: ["A. standing: vị thế", "B. mediocre: xoàng / bình thường", "C. standard: tiêu chuẩn", "D. outstanding: xuất sắc / nổi bật"],
+        mean: "Quỹ được thành lập nhằm tôn vinh những thành tựu xuất sắc của ông trong lĩnh vực giáo dục."
+    },
+    {
+        q: "Question 15: He was born into a ______ family and had to work hard to earn a living from a very young age.",
+        options: ["modest", "excessive", "luxurious", "wealthy"],
+        ans: "A",
+        trans: ["A. modest: khiêm tốn / bình thường (không giàu)", "B. excessive: quá mức", "C. luxurious: sang trọng", "D. wealthy: giàu có"],
+        mean: "Ông sinh ra trong một gia đình bình thường (khiêm tốn) và phải làm việc chăm chỉ để kiếm sống từ khi còn rất nhỏ."
+    },
+    {
+        q: "Question 16: The biography highlights the many ______ that the scientist had to face before making her big discovery.",
+        options: ["advantages", "comfort", "benefits", "hardships"],
+        ans: "D",
+        trans: ["A. advantages: thuận lợi", "B. comfort: sự thoải mái", "C. benefits: lợi ích", "D. hardships: sự gian khổ / khó khăn"],
+        mean: "Cuốn tiểu sử làm nổi bật nhiều gian khổ mà nhà khoa học đã phải đối mặt trước khi thực hiện phát minh lớn của mình."
+    },
+    {
+        q: "Question 17: Her selfless ______ to helping poor children earned her widespread admiration.",
+        options: ["dedication", "dedicate", "dedicated", "dedicatedly"],
+        ans: "A",
+        trans: ["A. dedication: sự cống hiến / sự tận tụy (danh từ)", "B. dedicate: cống hiến (động từ)", "C. dedicated: tận tụy (tính từ)", "D. dedicatedly: một cách tận tụy (trạng từ)"],
+        mean: "Sự cống hiến quên mình của cô cho việc giúp đỡ trẻ em nghèo đã mang lại cho cô sự ngưỡng mộ rộng rãi."
+    },
+    {
+        q: "Question 18: Professor Ngo Bao Chau was awarded the Fields Medal in ______ of his exceptional mathematical contributions.",
+        options: ["recognize", "recognizable", "recognition", "recognizably"],
+        ans: "C",
+        trans: ["A. recognize: công nhận (động từ)", "B. recognizable: có thể nhận ra (tính từ)", "C. in recognition of: để ghi nhận / công nhận (danh từ)", "D. recognizably: một cách có thể nhận ra (trạng từ)"],
+        mean: "Giáo sư Ngô Bảo Châu đã được trao Huy chương Fields để ghi nhận những đóng góp toán học xuất sắc của ông."
+    },
+    {
+        q: "Question 19: Many people admire Steve Jobs for his ability to ______ outside the box and create revolutionary products.",
+        options: ["speak", "talk", "think", "act"],
+        ans: "C",
+        trans: ["A. speak: nói", "B. talk: nói chuyện", "C. think outside the box: suy nghĩ sáng tạo / tư duy đột phá", "D. act: hành động"],
+        mean: "Nhiều người ngưỡng mộ Steve Jobs vì khả năng tư duy đột phá và tạo ra những sản phẩm mang tính cách mạng."
+    },
+    {
+        q: "Question 20: General Vo Nguyen Giap's victory at Dien Bien Phu became a ______ point in Vietnamese history.",
+        options: ["changing", "turning", "moving", "bending"],
+        ans: "B",
+        trans: ["A. changing: đang thay đổi", "B. turning point: bước ngoặt / điểm ngoặt", "C. moving: cảm động / di chuyển", "D. bending: bẻ cong"],
+        mean: "Chiến thắng Điện Biên Phủ của Đại tướng Võ Nguyên Giáp đã trở thành một bước ngoặt trong lịch sử Việt Nam."
+    },
+    {
+        q: "Question 21: The young entrepreneur showed great ______ skills when managing his fast-growing company.",
+        options: ["lead", "leader", "leading", "leadership"],
+        ans: "D",
+        trans: ["A. lead: dẫn dắt (động từ)", "B. leader: người lãnh đạo (danh từ)", "C. leading: hàng đầu (tính từ)", "D. leadership skills: kỹ năng lãnh đạo (danh từ ghép)"],
+        mean: "Doanh nhân trẻ đã thể hiện kỹ năng lãnh đạo tuyệt vời khi quản lý công ty đang phát triển nhanh chóng của mình."
+    },
+    {
+        q: "Question 22: She wrote a moving ______ about her grandfather, who was a brave soldier during the resistance war.",
+        options: ["mythology", "memoir", "fiction", "legend"],
+        ans: "B",
+        trans: ["A. mythology: thần thoại", "B. memoir: hồi ký / hồi ức", "C. fiction: hư cấu / tiểu thuyết", "D. legend: truyền thuyết"],
+        mean: "Cô đã viết một cuốn hồi ký cảm động về ông nội của mình, người là một người lính dũng cảm trong cuộc kháng chiến."
+    },
+    {
+        q: "Question 23: Despite his fame and fortune, he remained ______ and always remembered his roots.",
+        options: ["humble", "proud", "arrogant", "selfish"],
+        ans: "A",
+        trans: ["A. humble: khiêm tốn / nhún nhường", "B. proud: tự hào / kiêu ngạo", "C. arrogant: kiêu ngạo", "D. selfish: ích kỷ"],
+        mean: "Mặc dù nổi tiếng và giàu có, ông vẫn khiêm tốn và luôn nhớ về nguồn cội của mình."
+    },
+    {
+        q: "Question 24: Uncle Ho was a world-famous political figure who left a lasting ______ on world history.",
+        options: ["impress", "impressive", "impressively", "impression"],
+        ans: "D",
+        trans: ["A. impress: gây ấn tượng (động từ)", "B. impressive: ấn tượng (tính từ)", "C. impressively: một cách ấn tượng (trạng từ)", "D. leave an impression: để lại ấn tượng (danh từ)"],
+        mean: "Bác Hồ là một nhân vật chính trị nổi tiếng thế giới, người đã để lại ấn tượng sâu sắc lâu dài trong lịch sử thế giới."
+    },
+    {
+        q: "Question 25: The scientist spent years conducting ______ research before finding a cure for the disease.",
+        options: ["extensive", "extend", "extension", "extensively"],
+        ans: "A",
+        trans: ["A. extensive: diện rộng / chuyên sâu / sâu rộng (tính từ)", "B. extend: mở rộng (động từ)", "C. extension: sự mở rộng (danh từ)", "D. extensively: một cách sâu rộng (trạng từ)"],
+        mean: "Nhà khoa học đã dành nhiều năm tiến hành nghiên cứu sâu rộng trước khi tìm ra phương pháp chữa trị cho căn bệnh này."
+    },
+    {
+        q: "Question 26: Steve Jobs co-founded Apple with Steve Wozniak in a garage, starting from very ______ beginnings.",
+        options: ["noble", "grand", "humble", "royal"],
+        ans: "C",
+        trans: ["A. noble: cao quý / quý tộc", "B. grand: hoành tráng / lớn lao", "C. humble beginnings: xuất phát điểm khiêm tốn / bình thường", "D. royal: hoàng gia"],
+        mean: "Steve Jobs đồng sáng lập Apple cùng Steve Wozniak trong một gara, bắt đầu từ một xuất phát điểm rất khiêm tốn."
+    },
+    {
+        q: "Question 27: Her inspiring journey from a rural village to a world-renowned scientist is truly ______.",
+        options: ["remark", "remarkable", "remarkably", "remarking"],
+        ans: "B",
+        trans: ["A. remark: nhận xét (động từ/danh từ)", "B. remarkable: đáng chú ý / phi thường (tính từ)", "C. remarkably: một cách phi thường (trạng từ)", "D. remarking: đang nhận xét (hiện tại phân từ)"],
+        mean: "Hành trình đầy cảm hứng của cô từ một ngôi làng quê trở thành một nhà khoa học nổi tiếng thế giới thực sự rất phi thường."
+    },
+    {
+        q: "Question 28: General Vo Nguyen Giap was praised for his brilliant leadership and ______ mind.",
+        options: ["tactic", "tactical", "tactically", "tactician"],
+        ans: "B",
+        trans: ["A. tactic: chiến thuật (danh từ)", "B. tactical: thuộc về chiến thuật / đầy chiến thuật (tính từ)", "C. tactically: một cách chiến thuật (trạng từ)", "D. tactician: nhà chiến thuật (danh từ chỉ người)"],
+        mean: "Đại tướng Võ Nguyên Giáp được ca ngợi vì sự lãnh đạo tài tình và tư duy chiến thuật nhạy bén."
+    },
+    {
+        q: "Question 29: He dedicated his whole life ______ preserving the traditional cultural values of his homeland.",
+        options: ["for", "in", "with", "to"],
+        ans: "D",
+        trans: ["A. for: cho / vì", "B. in: trong", "C. with: với", "D. dedicate something to V-ing: cống hiến cái gì cho việc gì"],
+        mean: "Ông đã cống hiến trọn đời mình cho việc bảo tồn các giá trị văn hóa truyền thống của quê hương."
+    },
+    {
+        q: "Question 30: His life was a testament ______ the power of hard work, grit, and determination.",
+        options: ["to", "of", "for", "with"],
+        ans: "A",
+        trans: ["A. a testament to: bằng chứng / minh chứng cho", "B. of: của", "C. for: cho", "D. with: với"],
+        mean: "Cuộc đời của ông là một minh chứng cho sức mạnh của sự chăm chỉ, lòng kiên trì và sự quyết tâm."
+    }
+
+
+
+
+                ]
+            }
+            // 💡 Khi thêm Đề 03, Đề 04... Bạn chỉ cần sao chép đoạn cấu trúc trên dán vào đây!
+        ];
+
+        // =========================================================================
+        // CODE HIỂN THỊ CÂU HỎI VÀ GIẢI THÍCH TỰ ĐỘNG
+        // =========================================================================
+        const container = document.getElementById('exams-container');
+
+        dataExams.forEach(exam => {
+            let questionsHTML = '';
+            
+            exam.questions.forEach((qObj, index) => {
+                const labels = ['A', 'B', 'C', 'D'];
+                let optionsHTML = '';
+                
+                // Tạo danh sách 4 phương án
+                qObj.options.forEach((optText, optIdx) => {
+                    const optLabel = labels[optIdx];
+                    optionsHTML += `
+                        <label class="option-item">
+                            <input type="radio" name="q_${exam.id}_${index}" value="${optLabel}">
+                            ${optLabel}. ${optText}
+                        </label>
+                    `;
+                });
+
+                // Tạo danh sách dịch phương án
+                let transListHTML = '';
+                qObj.trans.forEach(t => {
+                    transListHTML += `<li>${t}</li>`;
+                });
+
+                // Khối câu hỏi + Khối giải thích chi tiết
+                questionsHTML += `
+                    <div class="question-box" id="box_${exam.id}_${index}">
+                        <div class="question-text">${qObj.q}</div>
+                        <div class="options-grid">${optionsHTML}</div>
+                        <div class="explanation-box">
+                            <strong>Đáp án đúng: ${qObj.ans}</strong>
+                            <ul class="translation-list">
+                                ${transListHTML}
+                            </ul>
+                            💡 <i>Dịch: ${qObj.mean}</i>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Thẻ Card chứa toàn bộ đề
+            const examCard = document.createElement('div');
+            examCard.className = 'exam-card';
+            examCard.innerHTML = `
+                <div class="exam-header" onclick="toggleExam(this)">
+                    <span>${exam.title}</span>
+                    <span class="icon">▼</span>
+                </div>
+                <div class="exam-content">
+                    <div class="score-board" id="score_${exam.id}"></div>
+                    <form id="form_${exam.id}">
+                        ${questionsHTML}
+                        <button type="button" class="btn-submit" onclick="checkAnswers('${exam.id}')">NỘP BÀI / XEM ĐÁP ÁN 🌽</button>
+                    </form>
+                </div>
+            `;
+            container.appendChild(examCard);
+        });
+
+        // ẨN / HIỆN NỘI DUNG ĐỀ THI
+        function toggleExam(headerElem) {
+            headerElem.parentElement.classList.toggle('active');
+        }
+
+        // TÍNH ĐIỂM & CHẤM BÀI
+// BẬT / TẮT HIỂN THỊ ĐÁP ÁN VÀ GIẢI THÍCH
+        // false: CHỈ hiện điểm (Ẩn đáp án & giải thích)
+        // true : Hiện điểm + HIỂN THỊ ĐÁP ÁN & GIẢI THÍCH CHI TIẾT
+        const SHOW_EXPLANATION = false; 
+
+        // TÍNH ĐIỂM & CHẤM BÀI
+        function checkAnswers(examId) {
+            const examData = dataExams.find(e => e.id === examId);
+            const form = document.getElementById(`form_${examId}`);
+            const scoreBoard = document.getElementById(`score_${examId}`);
+            let correctCount = 0;
+
+            examData.questions.forEach((qObj, index) => {
+                const qBox = document.getElementById(`box_${examId}_${index}`);
+                const expBox = qBox.querySelector('.explanation-box');
+                const options = qBox.querySelectorAll('.option-item');
+                const selected = form.querySelector(`input[name="q_${examId}_${index}"]:checked`);
+
+                // Reset trạng thái hiển thị
+                expBox.style.display = 'none';
+                qBox.classList.remove('correct', 'incorrect');
+                options.forEach(opt => opt.classList.remove('correct-option', 'wrong-option'));
+
+                // Kiểm tra đáp án để tính điểm
+                if (selected) {
+                    if (selected.value === qObj.ans) {
+                        correctCount++;
+                    }
+                }
+
+                // NẾU BẠN BẬT "SHOW_EXPLANATION = true" THÌ MỚI HIỆN ĐÁP ÁN & GIẢI THÍCH
+                if (SHOW_EXPLANATION) {
+                    expBox.style.display = 'block';
+                    options.forEach(opt => {
+                        const radio = opt.querySelector('input');
+                        if (radio.value === qObj.ans) {
+                            opt.classList.add('correct-option');
+                        }
+                    });
+
+                    if (selected) {
+                        if (selected.value === qObj.ans) {
+                            qBox.classList.add('correct');
+                        } else {
+                            qBox.classList.add('incorrect');
+                            selected.parentElement.classList.add('wrong-option');
+                        }
+                    } else {
+                        qBox.classList.add('incorrect');
+                    }
+                }
+            });
+
+            // Hiển thị tổng số câu đúng
+            scoreBoard.style.display = 'block';
+            scoreBoard.innerHTML = `🎉 BẠN ĐÃ ĐẠT: ${correctCount}/${examData.questions.length} CÂU ĐÚNG! 🎉`;
+            scoreBoard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+    </script>
+</body>
+</html>
